@@ -1,6 +1,8 @@
 import webbrowser
 import google.generativeai as genai
 from bing_image_downloader import downloader
+import os
+import base64
 
 def gem(prompt):
     genai.configure(api_key="AIzaSyCk03OuBh1W_-IKvMfWD54UByiXAmYexYw")
@@ -18,10 +20,16 @@ def dex_chat(prompt):
             webbrowser.open(site[1])
             return output
     
-    if f"provide images".lower() in prompt.lower():
-        search_query = prompt
-        downloader.download(search_query, limit=3, output_dir='bing_images', adult_filter_off=True, force_replace=False, timeout=60)
-        output = "Yes the images are as follows..."
-        return output
+    if f"provide image".lower() in prompt.lower():
+            search_query = prompt
+            output_dir = "bing_images"
+            downloader.download(search_query, limit=3, output_dir=output_dir, adult_filter_off=True, force_replace=False, timeout=60)
+            image_files = os.listdir(f'./{output_dir}/{search_query}')
+            image_data = []
+            for image_file in image_files:
+                with open(f'./{output_dir}/{search_query}/{image_file}', "rb") as img_file:
+                    encoded_image = base64.b64encode(img_file.read()).decode('utf-8')
+                    image_data.append(f"data:image/jpeg;base64,{encoded_image}")
+            return image_data
 
     return gem(prompt)
