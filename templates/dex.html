@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dex</title>
+    <link rel='icon' href='./static/img/robot.png'>
+    <link rel="stylesheet" href="./static/css/dex.css">
+    <script src="https://unpkg.com/typed.js@2.1.0/dist/typed.umd.js"></script>
+</head>
+<body>
+    <main>
+        <div class="logo_con">
+            <h1><i class="fi fi-rs-robot bot"></i> Dex</h1><span>your personal ai assistant</span>
+        </div>
+        
+        <div class="view_con"></div>
+
+        <div class="send_con">
+            <div class="form">
+                <input type="text" id="chat" placeholder="Chat with Dex">
+                <button onclick="dex_chat()" class="submit" type="submit">
+                    <i class="fi fi-rr-paper-plane-top"></i>
+                </button>
+                <i class="fi fi-rr-microphone voice"></i>
+            </div>
+        </div>
+    </main>
+</body>
+<script src="./static/js/dex.js"></script>
+</html>
