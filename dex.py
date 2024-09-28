@@ -9,6 +9,7 @@ def dex():
     if request.method == 'POST':
         prompt = request.form.get('prompt')
         result = dex_chat(prompt)
+        print(result)
         return jsonify({'response': f'{result}'})
     return render_template('dex.html')
 

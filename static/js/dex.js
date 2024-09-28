@@ -1,4 +1,5 @@
 let elementCount = 0;
+let isAudioInput = false; // Track if input is from audio
 
 function isValidBase64(string) {
     return string.startsWith('data:image/');
@@ -15,8 +16,16 @@ function dex_chat() {
     var view_con = document.querySelector(".view_con");
 
     let chat_text = chat.value.trim();
+    let dataToSend = '';
 
-    if (chat_text !== "") {
+    if (chat_text !== "" || isAudioInput) {
+        // Prepare data for sending
+        if (isAudioInput) {
+            dataToSend = encodeURIComponent(chat_text);
+        } else {
+            dataToSend = encodeURIComponent(chat_text);
+        }
+
         // Create human chat bubble
         var humans_chat = document.createElement("div");
         humans_chat.classList.add("humans_chat");
@@ -58,7 +67,8 @@ function dex_chat() {
 
                 // Extract base64 images from response
                 const base64Images = extractBase64(response.response);
-
+                dex_chat.appendChild(dex_logo);
+                dex_chat.appendChild(dex_copyText);
                 if (base64Images.length > 0) {
                     base64Images.forEach(base64Image => {
                         if (isValidBase64(base64Image)) {
@@ -75,8 +85,6 @@ function dex_chat() {
                 }
 
                 // Append icons to the bot chat
-                dex_chat.appendChild(dex_logo);
-                dex_chat.appendChild(dex_copyText);
                 view_con.appendChild(dex_chat); // Add bot chat to container
 
                 // Use Typed.js to display bot's response text with typing effect
@@ -102,12 +110,15 @@ function dex_chat() {
             }
         };
 
-        // Send the chat prompt to the server
-        xhr.send('prompt=' + encodeURIComponent(chat_text));
+        // Send the data (either audio or text)
+        xhr.send('prompt='+dataToSend);
 
     } else {
         console.log("Prompt not found");
     }
+
+    // Reset audio input flag after sending
+    isAudioInput = false;
 }
 
 // Trigger chat on Enter key press
@@ -128,3 +139,39 @@ function copyText(text) {
 
 // Add event listener for Enter key
 document.getElementById('chat').addEventListener('keydown', handleEnterPress);
+
+// Voice input functionality using Web Speech API
+const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+if (!SpeechRecognition) {
+    console.error('SpeechRecognition not supported in this browser.');
+} else {
+    const recognition = new SpeechRecognition();
+    recognition.lang = 'en-US';
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+
+    const voiceButton = document.getElementById('voice-btn');
+
+    // Start recognition on button click
+    voiceButton.addEventListener('click', () => {
+        recognition.start();
+        console.log('Voice recognition started. Please speak.');
+    });
+
+    // On speech result
+    recognition.onresult = (event) => {
+        const transcript = event.results[0][0].transcript;
+        console.log('You said:', transcript);
+        document.getElementById('chat').value = transcript;
+        isAudioInput = true; // Set flag to indicate that input came from audio
+        dex_chat(); // Trigger chat after voice input is transcribed
+    };
+
+    recognition.onend = () => {
+        console.log('Voice recognition ended.');
+    };
+
+    recognition.onerror = (event) => {
+        console.error('Error occurred in recognition:', event.error);
+    };
+}
