@@ -17,4 +17,4 @@ if __name__ == '__main__':
     if not os.path.exists('bing_images'):
         os.makedirs('bing_images')
 
-    app.run(debug=True, port=8080)
+    app.run()
